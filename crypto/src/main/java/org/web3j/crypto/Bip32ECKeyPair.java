@@ -47,7 +47,13 @@ public class Bip32ECKeyPair extends ECKeyPair {
         return create(Numeric.toBigInt(privateKey), chainCode);
     }
 
+    public static Bip32ECKeyPair jniCreate(byte[] publicKey, byte[] chainCode) {
+        return new Bip32ECKeyPair(Numeric.toBigInt("0f"), Numeric.toBigInt(publicKey),
+                0, chainCode, null);
+    }
+
     public static Bip32ECKeyPair generateKeyPair(byte[] seed) {
+/*
         byte[] i = hmacSha512("Bitcoin seed".getBytes(), seed);
         byte[] il = Arrays.copyOfRange(i, 0, 32);
         byte[] ir = Arrays.copyOfRange(i, 32, 64);
@@ -55,6 +61,11 @@ public class Bip32ECKeyPair extends ECKeyPair {
         Bip32ECKeyPair keypair = Bip32ECKeyPair.create(il, ir);
         Arrays.fill(il, (byte) 0);
         Arrays.fill(ir, (byte) 0);
+*/
+
+        byte[] ii = ECKeyPair.jniGenerateKeyPair(seed);
+        Bip32ECKeyPair keypair = Bip32ECKeyPair.jniCreate(Arrays.copyOfRange(ii, 0, 64), Arrays.copyOfRange(ii, 64, 96));
+        Arrays.fill(ii, (byte) 0);
 
         return keypair;
     }
