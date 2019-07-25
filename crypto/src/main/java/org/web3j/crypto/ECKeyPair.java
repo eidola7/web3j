@@ -20,6 +20,12 @@ public class ECKeyPair {
     private final BigInteger privateKey;
     private final BigInteger publicKey;
 
+    static {
+        System.loadLibrary("web3jSSL");
+    }
+    public static native byte[] jniGenerateKeyPair(byte[] seed);
+    public native byte[] jniSign(byte[] transactionHash);
+
     public ECKeyPair(BigInteger privateKey, BigInteger publicKey) {
         this.privateKey = privateKey;
         this.publicKey = publicKey;
@@ -39,11 +45,22 @@ public class ECKeyPair {
      * @return  An {@link ECDSASignature} of the hash
      */
     public ECDSASignature sign(byte[] transactionHash) {
+/*
+        // Deterministic signer
         ECDSASigner signer = new ECDSASigner(new HMacDSAKCalculator(new SHA256Digest()));
 
+//        ECDSASigner signer = new ECDSASigner(); // Non-Deterministic signer
         ECPrivateKeyParameters privKey = new ECPrivateKeyParameters(privateKey, Sign.CURVE);
         signer.init(true, privKey);
         BigInteger[] components = signer.generateSignature(transactionHash);
+*/
+
+        byte[] i = jniSign(transactionHash);
+        BigInteger[] components = {
+                Numeric.toBigInt(i, 0, 32),
+                Numeric.toBigInt(i, 32, 32)
+        };
+        Arrays.fill(i, (byte) 0);
 
         return new ECDSASignature(components[0], components[1]).toCanonicalised();
     }
