@@ -48,9 +48,14 @@ public class Bip32ECKeyPair extends ECKeyPair {
     }
 
     public static Bip32ECKeyPair jniCreate(byte[] publicKey, byte[] chainCode) {
-        return new Bip32ECKeyPair(Numeric.toBigInt("0f"), Numeric.toBigInt(publicKey),
+        return new Bip32ECKeyPair(null, Numeric.toBigInt(publicKey),
                 0, chainCode, null);
     }
+//
+//    private static Bip32ECKeyPair testCreate(byte[] privateKey, byte[] publicKey, byte[] chainCode) {
+//        return new Bip32ECKeyPair(Numeric.toBigInt(privateKey), Numeric.toBigInt(publicKey),
+//                0, chainCode, null);
+//    }
 
     public static Bip32ECKeyPair generateKeyPair(byte[] seed) {
 /*
@@ -65,6 +70,7 @@ public class Bip32ECKeyPair extends ECKeyPair {
 
         byte[] ii = ECKeyPair.jniGenerateKeyPair(seed);
         Bip32ECKeyPair keypair = Bip32ECKeyPair.jniCreate(Arrays.copyOfRange(ii, 0, 64), Arrays.copyOfRange(ii, 64, 96));
+//        Bip32ECKeyPair keypair = Bip32ECKeyPair.testCreate(Arrays.copyOfRange(ii, 96, 128), Arrays.copyOfRange(ii, 0, 64), Arrays.copyOfRange(ii, 64, 96));
         Arrays.fill(ii, (byte) 0);
 
         return keypair;
